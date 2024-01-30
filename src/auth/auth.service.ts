@@ -35,8 +35,6 @@ export class AuthService {
       hashedRefreshToken: null, //null상태에서 로그인시 refreshToken발급예정
       createdAt: createdAt,
     });
-    console.log('👉 ~ check:', hashedPassword, createdAt);
-    console.log(this.users)
     console.log('Memory Usage:', process.memoryUsage()); 
     //heap 메모리 할당 부분을 보면 됨
 
