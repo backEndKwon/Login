@@ -29,6 +29,7 @@ export class loginDto {
   password: string;
 
   // 토큰은 있을 수도 없을 수도 이상할 수도
+  //회원가입시 NULL, 로그인시 상황에 맞게 hashedRefreshToken 반환
   hashedRefreshToken?: string | null | undefined;
 }
 
