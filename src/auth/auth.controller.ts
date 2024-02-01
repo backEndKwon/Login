@@ -3,7 +3,7 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 //swagger적용하기 위해서는 Api태그, 오퍼레이션, 리스폰스 필요
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { loginDto, signUpDto } from './dtos/user.dto';
+import { loginDto, logoutDto, signUpDto } from './dtos/user.dto';
 import { userId } from './types/user.type';
 
 @Controller('auth')
@@ -49,5 +49,17 @@ export class AuthController {
   login(@Body() LoginDto: loginDto): Promise<userId & tokens> {
     console.log("👉 ~ LoginDto:", LoginDto)
     return this.authService.login(LoginDto)
+  }
+
+  //로그아웃
+  //로그아웃은 받아온 이메일로 로그아웃을 시키는데 refresh token을 null처리 해준다.
+  //로그아웃을 한 후 userId반환으로 필요한 추가동작 하게끔 유도(ex, 로그아웃 성공 표시 등)
+  @Post('logout')
+  @ApiOperation({
+    summary:"사용자 로그아웃시 해당 email을 기반으로 refreshToken null처리후 userId반환",
+    description:"summary와 동일"
+  }) 
+  logout(@Body() LogoutDto: logoutDto):Promise<userId>{
+    return this.authService.logout(LogoutDto);
   }
 }

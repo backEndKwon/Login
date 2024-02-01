@@ -4,7 +4,7 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { signUpDto, loginDto } from './dtos/user.dto';
+import { signUpDto, loginDto, logoutDto } from './dtos/user.dto';
 import { Users, userId } from './types/user.type';
 import * as argon from 'argon2';
 import { randomUUID } from 'crypto';
@@ -57,7 +57,7 @@ export class AuthService {
   // 로그인시 loginDto.email이 있는지 확인
   // 해당 계정이 있다면 access와 refresh 토큰, 해당userid 반환
   async login(loginDto: loginDto): Promise<userId & tokens> {
-    console.log(`login service 진입`)
+    console.log(`login service 진입`);
     // 해당 유저가 존재하지 않을 경우
     // (1)email검사, (2)password검사
     const isUser = this.users.find((user) => user.email === loginDto.email);
@@ -79,7 +79,10 @@ export class AuthService {
     //여기서 한단계 더 나아가서 만약 refreshToken이 null이라면 그냥 null값
     // 그게 아니라면 refreshToken까지도 hash시켜버려서 더욱 안전하게 가자
     await this.hashedRefreshToken(loginDto.email, tokens.refreshToken);
-    console.log("👉 ~  { ...tokens, id: isUser.id }:",  { ...tokens, id: isUser.id })
+    console.log('👉 ~  { ...tokens, id: isUser.id }:', {
+      ...tokens,
+      id: isUser.id,
+    });
     return { ...tokens, id: isUser.id };
   }
 
@@ -88,17 +91,17 @@ export class AuthService {
     email: string,
     refreshToken: string | null,
   ): Promise<void> {
-    console.log("this.hashedRefreshToken 진입")
+    console.log('this.hashedRefreshToken 진입');
     //만약 받아온 refreshToken이 null이면? isUser의 hash된 리플레시토큰을 null로 바꿔준다.
     const isUser = this.users.find((user) => user.email === email);
     if (refreshToken === null) {
       isUser.hashedRefreshToken = null;
-      return;//끝내기
+      return; //끝내기
     }
     //그게아니라면 hash시키기
-    isUser.hashedRefreshToken = await argon.hash(refreshToken)
+    isUser.hashedRefreshToken = await argon.hash(refreshToken);
   }
-  
+
   //email을 가지고 access와 refresh 토큰 찍어내기
   async generateTokens(email: string): Promise<tokens> {
     const accessTokenPayload: jwtPayload = {
@@ -127,5 +130,17 @@ export class AuthService {
       }),
     ]);
     return { accessToken, refreshToken };
+  }
+
+  async logout(LogoutDto: logoutDto): Promise<userId> {
+    const { email, id, hashedRefreshToken } = this.users.find(
+      (user) => user.email === LogoutDto.email,
+    );
+    // console.log(id)
+    // refreshToken을 null로 만들어주기
+    this.hashedRefreshToken(email, null);
+    // 로그아웃 두번 해보면 hashedRefreshToken이 null로 바뀌어있음을 알 수 있다.
+    // console.log(hashedRefreshToken)
+    return { id };
   }
 }
