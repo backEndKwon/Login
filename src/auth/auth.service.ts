@@ -17,7 +17,6 @@ import { randomUUID } from 'crypto';
 import { jwtPayload, tokens } from './types/token.type';
 import { validatePassword } from './validations.ts/password-validation';
 import { JwtService } from '@nestjs/jwt';
-import { generate } from 'rxjs';
 
 const JWT_SECRET_KEY = '123QWE!@#';
 
@@ -28,8 +27,9 @@ export class AuthService {
   //jwtservice는 주입시켜서 사용해야함
   constructor(private readonly jwtService: JwtService) {}
 
-  async check() {
-    return this.users;
+  //모든계정 리스트
+  async userList(): Promise<Users[] | string> {
+    return this.users.length === 0 ? '가입된 계정이 없습니다.' : this.users;
   }
 
   async signUp(SignUpDto: signUpDto): Promise<userId> {
@@ -178,7 +178,7 @@ export class AuthService {
     // throw new UnauthorizedException('222올바르지 않은 refreshToken입니다.');
     //token 재 생성 후 hash한 token으로 update해줘야됨
     const newToken = await this.generateTokens(isUser.email);
-    console.log("👉 ~ newToken:", newToken)
+    console.log('👉 ~ newToken:', newToken);
     await this.hashedRefreshToken(isUser.email, newToken.refreshToken);
     return newToken;
   }

@@ -12,17 +12,16 @@ import { userId } from './types/user.type';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  // api 확인용
+  // 등록된 계정들 확인용
   @Get('home')
   //operation = 동작
   @ApiOperation({
-    summary: '송수신 확인용 API',
-    description: 'GET방식을 보내 반환값을 잘 return하는지 확인',
+    summary: '등록된 임시계정들 확인용(송수신 확인용 API)',
+    description: 'get방식 확인용 api',
   })
   //response = 반환값
-  @ApiResponse({ description: 'connected success를 반환한다.' })
   check() {
-    return this.authService.check();
+    return this.authService.userList();
   }
 
   //회원가입
