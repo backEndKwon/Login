@@ -2,9 +2,15 @@ import {
   HttpException,
   HttpStatus,
   Injectable,
+  Res,
   UnauthorizedException,
 } from '@nestjs/common';
-import { signUpDto, loginDto, logoutDto } from './dtos/user.dto';
+import {
+  signUpDto,
+  loginDto,
+  logoutDto,
+  reissueRefreshToken,
+} from './dtos/user.dto';
 import { Users, userId } from './types/user.type';
 import * as argon from 'argon2';
 import { randomUUID } from 'crypto';
@@ -48,7 +54,7 @@ export class AuthService {
       hashedRefreshToken: null, //null상태에서 로그인시 refreshToken발급예정
       createdAt: createdAt,
     });
-    console.log('Memory Usage:', process.memoryUsage());
+    // console.log('Memory Usage:', process.memoryUsage());
     //heap 메모리 할당 부분을 보면 됨
 
     return { id };
@@ -79,10 +85,7 @@ export class AuthService {
     //여기서 한단계 더 나아가서 만약 refreshToken이 null이라면 그냥 null값
     // 그게 아니라면 refreshToken까지도 hash시켜버려서 더욱 안전하게 가자
     await this.hashedRefreshToken(loginDto.email, tokens.refreshToken);
-    console.log('👉 ~  { ...tokens, id: isUser.id }:', {
-      ...tokens,
-      id: isUser.id,
-    });
+
     return { ...tokens, id: isUser.id };
   }
 
@@ -142,5 +145,41 @@ export class AuthService {
     // 로그아웃 두번 해보면 hashedRefreshToken이 null로 바뀌어있음을 알 수 있다.
     // console.log(hashedRefreshToken)
     return { id };
+  }
+
+  async reissueRefreshToken(
+    ReissueRefreshToken: reissueRefreshToken,
+  ): Promise<tokens> {
+    const { userId, refreshToken } = ReissueRefreshToken;
+    const isUser = this.users.find((user) => user.id === userId);
+    if (!isUser || !refreshToken) {
+      throw new UnauthorizedException(
+        'refreshtoken이 없거나 존재하지 않는 userId입니다.',
+      );
+    }
+    //그게 아니라면 hashed된 refreshtoken과 같은지 유효성 확인
+    const isValid = await argon.verify(isUser.hashedRefreshToken, refreshToken);
+    console.log(
+      '👉 ~ isUser.hashedRefreshToken, refreshToken:',
+      isUser.hashedRefreshToken,
+      refreshToken,
+    );
+    console.log('👉 ~ isValid:', isValid);
+    if (!isValid)
+      throw new UnauthorizedException('111올바르지 않은 refreshToken입니다.');
+    // jwt service로 추가 확실한 증명 확인
+
+    const check = this.jwtService.verify(refreshToken, {
+      secret: JWT_SECRET_KEY,
+    });
+    console.log('👉 ~ check:', check);
+    //로그아웃
+    // await this.logout({ email: isUser.email });
+    // throw new UnauthorizedException('222올바르지 않은 refreshToken입니다.');
+    //token 재 생성 후 hash한 token으로 update해줘야됨
+    const newToken = await this.generateTokens(isUser.email);
+    console.log("👉 ~ newToken:", newToken)
+    await this.hashedRefreshToken(isUser.email, newToken.refreshToken);
+    return newToken;
   }
 }

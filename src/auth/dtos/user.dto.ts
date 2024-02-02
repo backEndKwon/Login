@@ -39,3 +39,11 @@ export class logoutDto {
   @ApiProperty({ description: '이메일' })
   email: string;
 }
+
+//reissue용 dto
+export class reissueRefreshToken {
+  @ApiProperty({ description: '사용자userId' })
+  userId: UUID;
+  @ApiProperty({ description: 'refreshToken' })
+  refreshToken: string;
+}

@@ -3,7 +3,7 @@ import { Controller, Get, Post, Body } from '@nestjs/common';
 import { AuthService } from './auth.service';
 //swagger적용하기 위해서는 Api태그, 오퍼레이션, 리스폰스 필요
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { loginDto, logoutDto, signUpDto } from './dtos/user.dto';
+import { loginDto, logoutDto, signUpDto, reissueRefreshToken } from './dtos/user.dto';
 import { userId } from './types/user.type';
 
 @Controller('auth')
@@ -47,7 +47,6 @@ export class AuthController {
   //body값으로 loginDto(email, password)에 맞게 받기
   //반환값은 token을 준다. (추가로 userId까지 주어 사용자 식별, 클라이언츠 측 상태관리에 사용하게 끔 하자)
   login(@Body() LoginDto: loginDto): Promise<userId & tokens> {
-    console.log("👉 ~ LoginDto:", LoginDto)
     return this.authService.login(LoginDto)
   }
 
@@ -62,4 +61,18 @@ export class AuthController {
   logout(@Body() LogoutDto: logoutDto):Promise<userId>{
     return this.authService.logout(LogoutDto);
   }
+
+//refreshToken reissue해주기
+//access는 일회용이라 발급 x
+//새로운 token발급 해줘야하니 Promise에 token
+@Post('refresh')
+@ApiOperation({
+summary:"refreshToken 재발급 해주기",
+description:"사용자가 id로 refresh 요청시 refreshToken재발급해주기"
+})
+reissueRefreshToken(@Body() ReissueRefreshToken:reissueRefreshToken):Promise<tokens>{
+  return this.authService.reissueRefreshToken(ReissueRefreshToken);
+
+}
+
 }
