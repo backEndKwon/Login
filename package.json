@@ -27,7 +27,8 @@
     "@nestjs/swagger": "^7.2.0",
     "argon2": "^0.31.2",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "validator": "^13.11.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

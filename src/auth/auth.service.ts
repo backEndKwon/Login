@@ -17,7 +17,7 @@ import { randomUUID } from 'crypto';
 import { jwtPayload, tokens } from './types/token.type';
 import { validatePassword } from './validations.ts/password-validation';
 import { JwtService } from '@nestjs/jwt';
-
+import * as validator from 'validator'
 const JWT_SECRET_KEY = '123QWE!@#';
 
 @Injectable()
@@ -33,11 +33,40 @@ export class AuthService {
   }
 
   async signUp(SignUpDto: signUpDto): Promise<userId> {
+    /* 
+    이메일 유효성 검사 
+    RFC5322호환 정규식 사용(이메일 주소의 99.99% 검증 가능하다고 함)
+    참고: http://emailregex.com/ 
+    */
+    // const regexEmail = new RegExp(
+    //   "([!#-'*+/-9=?A-Z^-~-]+(.[!#-'*+/-9=?A-Z^-~-]+)*|\"([]!#-[^-~ \t]|(\\[\t -~]))+\")@([!#-'*+/-9=?A-Z^-~-]+(.[!#-'*+/-9=?A-Z^-~-]+)*|[[\t -Z^-~]*])",
+    // );
+    // const isPassedEmail = regexEmail.test(SignUpDto.email);
+    if (!validator.isEmail(SignUpDto.email))
+      throw new HttpException(
+        '잘못된 이메일 형식입니다.',
+        HttpStatus.BAD_REQUEST,
+      );
+
+    /* 
+      비밀번호 유효성 검사
+      조건: 8자 이상, 최소 하나 이상 대문자 알파벳, 소문자 알파벳, 숫자, 특수문자
+      문자 숫자 또는 특수문자이외에 다른 문자는 허용 안됨
+    */
+
+      const regexPassword = /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/
+      
+      // const isPassedPassword = regexPassword.test("123qweQWE!@#");
+    console.log("👉 ~ isPassedPassword:", regexPassword.test(SignUpDto.password))
+    if (!regexPassword.test(SignUpDto.password))
+      throw new HttpException(
+        '비밀번호 규칙에 맞게 재설정 해주세요.',
+        HttpStatus.BAD_REQUEST,
+      );
     //해당 email 중복검사
     const isUser = this.users.find((user) => user.email === SignUpDto.email);
-    if (isUser) {
+    if (isUser)
       throw new HttpException('이미 가입한 메일입니다.', HttpStatus.CONFLICT);
-    } // 추후 error handling 필요
 
     //1) 비밀번호 hash후 저장(여기서는 임시 배열 사용중이니 create와 save대신 push로 저장하기)
     //2) uuid 발행

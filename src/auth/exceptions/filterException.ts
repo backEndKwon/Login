@@ -17,7 +17,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
         message,
         statusCode: status,
         timestamp: new Date().toISOString(),
-        path: request.url,
+        path: request.url
       });
       const err = `{\n   [오류메세지] : ${message} \n   [statusCode] : ${status}\n   [path] : ${request.url}\n}`
       console.log(err)
