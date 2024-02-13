@@ -31,7 +31,7 @@ export class AuthService {
 
   //모든계정 리스트
   async userList(): Promise<Users[] | string> {
-    return this.users.length === 0 ? '(cicd 확인)가입된 계정이 없습니다.' : this.users;
+    return this.users.length === 0 ? '(cicd확인(1차))가입된 계정이 없습니다.' : this.users;
   }
 
   async signUp(SignUpDto: signUpDto): Promise<userId> {
