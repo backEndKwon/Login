@@ -30,7 +30,7 @@ jobs:
     - run: npm run build --if-present
 
     - name: Make Zip File
-      run: zip -qq -r ./$GITHUB_SHA.zip
+      run: zip -qq -r ./$GITHUB_SHA.zip .
       shell: bash
 
     - name: Configure AWS credentials
