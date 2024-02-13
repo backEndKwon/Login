@@ -29,14 +29,9 @@ export class AuthService {
   //jwtservice는 주입시켜서 사용해야함
   constructor(private readonly jwtService: JwtService) {}
 
-  //CICD확인용
-  async checkCICD():Promise<string>{
-    return "CICD 확인"
-  }
-
   //모든계정 리스트
   async userList(): Promise<Users[] | string> {
-    return this.users.length === 0 ? '가입된 계정이 없습니다.' : this.users;
+    return this.users.length === 0 ? '(cicd 확인)가입된 계정이 없습니다.' : this.users;
   }
 
   async signUp(SignUpDto: signUpDto): Promise<userId> {

@@ -12,12 +12,6 @@ import { userId } from './types/user.type';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  //CICD확인
-  @Get()
-  checkCICD(){
-    return this.authService.checkCICD()
-  }
-
   // 등록된 계정들 확인용
   @Get('home')
   //operation = 동작
