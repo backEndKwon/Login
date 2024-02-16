@@ -21,5 +21,6 @@ cd $REPOSITORY
 # echo "> $JAR_PATH 배포"
 # nohup java -jar $JAR_PATH > /dev/null 2> /dev/null < /dev/null &
 
-pm2 start npm --name login-project -- run dev --watch
+pm2 kill
+pm2 start dist/main.js --name login-project
 pm2 save
