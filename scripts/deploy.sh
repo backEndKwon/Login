@@ -1,7 +1,9 @@
-REPOSITORY=/home/ec2-user/login-project
+# REPOSITORY=/home/ec2-user/login-project
+REPOSITORY=/Login
 cd $REPOSITORY
 
-APP_NAME=login-project
+# APP_NAME=login-project
+APP_NAME=Login
 JAR_NAME=$(ls $REPOSITORY/build/libs/ | grep 'SNAPSHOT.jar' | tail -n 1)
 JAR_PATH=$REPOSITORY/build/libs/$JAR_NAME
 
