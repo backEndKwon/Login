@@ -32,7 +32,7 @@ export class AuthService {
   //모든계정 리스트
   async userList(): Promise<Users[] | string> {
     const today = new Date()
-    return this.users.length === 0 ? `(cicd확인4차)_${today})가입된 계정이 없습니다.` : this.users;
+    return this.users.length === 0 ? `(cicd최종확인)_${today})가입된 계정이 없습니다.` : this.users;
   }
 
   async signUp(SignUpDto: signUpDto): Promise<userId> {
