@@ -18,7 +18,7 @@ import { jwtPayload, tokens } from './types/token.type';
 import { validatePassword } from './validations.ts/password-validation';
 import { JwtService } from '@nestjs/jwt';
 import * as validator from 'validator';
-import { ERROR_MESSAGES } from './exceptions/errorMessage';
+import { ERROR_MESSAGES } from '../common/exceptions/errorMessage';
 
 const JWT_SECRET_KEY = '123QWE!@#';
 

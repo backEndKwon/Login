@@ -5,7 +5,7 @@ import { AuthController } from './auth/auth.controller';
 import { AuthModule } from './auth/auth.module';
 import { AuthService } from './auth/auth.service';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from './auth/exceptions/filterException';
+import { HttpExceptionFilter } from './common/exceptions/filterException';
 
 @Module({
   imports: [AuthModule],
