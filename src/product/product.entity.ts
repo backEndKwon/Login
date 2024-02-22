@@ -21,20 +21,17 @@ export class ProductsEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   itemId: number;
 
-  @Column()
+  @Column({nullable:false})
   userId: string;
 
-  @Column()
+  @Column({nullable:false})
   prodTitle: string;
 
-  @Column()
+  @Column({nullable:false})
   prodPrice: number;
   
-  @Column()
+  @Column({nullable:false})
   prodQuantity: number;
-  
-  @Column({default:5})
-  limitQuantity: number;
   
   @Column()
   reservationList: Text;
