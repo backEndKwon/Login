@@ -1,8 +1,13 @@
+import { UUID } from 'src/auth/types/user.type';
+import { UsersEntity } from '../auth/user.entity';
 import {
   BaseEntity,
   Column,
   CreateDateColumn,
   Entity,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 // import { ApiProperty } from '@nestjs/swagger';
@@ -22,7 +27,7 @@ export class ProductsEntity extends BaseEntity {
   itemId: number;
 
   @Column({nullable:false})
-  userId: string;
+  userId: UUID;
 
   @Column({nullable:false})
   prodTitle: string;
@@ -34,11 +39,14 @@ export class ProductsEntity extends BaseEntity {
   prodQuantity: number;
   
   @Column()
-  reservationList: Text;
+  reservationList: string[];
   
   @CreateDateColumn()
   createdAt: Date;
   
   @CreateDateColumn()
   updatedAt: Date;
+  
+  @ManyToOne(() => UsersEntity, (user) => user.userId) // 여러 상품은 하나의 사용자에 속함
+  user: UsersEntity;
 }

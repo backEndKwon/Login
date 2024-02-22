@@ -1,6 +1,7 @@
 import {
   HttpException,
   HttpStatus,
+  Inject,
   Injectable,
   Res,
   UnauthorizedException,
@@ -19,20 +20,25 @@ import { validatePassword } from './validations.ts/password-validation';
 import { JwtService } from '@nestjs/jwt';
 import * as validator from 'validator';
 import { ERROR_MESSAGES } from '../common/exceptions/errorMessage';
+import { Repository } from 'typeorm';
+import { UsersEntity } from './user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 const JWT_SECRET_KEY = '123QWE!@#';
 
 @Injectable()
 export class AuthService {
   //임시의 database 생성
-  private readonly users: Users[] = [];
   //jwtservice는 주입시켜서 사용해야함
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    @InjectRepository(UsersEntity)
+    private readonly usersRepository: Repository<UsersEntity & Users>,
+    private readonly jwtService: JwtService,
+  ) {}
 
   //모든계정 리스트
-  async userList(): Promise<Users[] | string> {
-    const today = new Date()
-    return this.users.length === 0 ? `(cicd최종확인)_${today})가입된 계정이 없습니다.` : this.users;
+  async userList(): Promise<UsersEntity[]> {
+    return this.usersRepository.find({});
   }
 
   async signUp(SignUpDto: signUpDto): Promise<userId> {
@@ -66,7 +72,10 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     //해당 email 중복검사
-    const isUser = this.users.find((user) => user.email === SignUpDto.email);
+    const isUser = await this.usersRepository.findOne({
+      where: { email: SignUpDto.email },
+    });
+    // ((user) => user.email === SignUpDto.email);
     if (isUser)
       throw new HttpException(
         ERROR_MESSAGES.EMAIL_ALREADY_EXIST,
@@ -81,13 +90,17 @@ export class AuthService {
     const createdAt = new Date().toLocaleString('en-US', {
       timeZone: 'Asia/Seoul',
     });
-    this.users.push({
+
+    const createUserInfo = {
       id,
       email: SignUpDto.email,
       password: hashedPassword,
       hashedRefreshToken: null, //null상태에서 로그인시 refreshToken발급예정
       createdAt: createdAt,
-    });
+    };
+    const newUser = this.usersRepository.create(createUserInfo);
+    await this.usersRepository.save(newUser);
+
     // console.log('Memory Usage:', process.memoryUsage());
     //heap 메모리 할당 부분을 보면 됨
 
@@ -99,7 +112,9 @@ export class AuthService {
   async login(loginDto: loginDto): Promise<userId & tokens> {
     // 해당 유저가 존재하지 않을 경우
     // (1)email검사, (2)password검사
-    const isUser = this.users.find((user) => user.email === loginDto.email);
+    const isUser = await this.usersRepository.findOne({
+      where: { email: loginDto.email },
+    });
 
     if (!isUser)
       throw new HttpException(
@@ -125,7 +140,7 @@ export class AuthService {
     // 그게 아니라면 refreshToken까지도 hash시켜버려서 더욱 안전하게 가자
     await this.hashedRefreshToken(loginDto.email, tokens.refreshToken);
 
-    return { ...tokens, id: isUser.id };
+    return { ...tokens, id: isUser.userId };
   }
 
   //refreshToken이 로그인 과정에서 만료되었었으면 null일 수도 있으니까
@@ -134,7 +149,7 @@ export class AuthService {
     refreshToken: string | null,
   ): Promise<void> {
     //만약 받아온 refreshToken이 null이면? isUser의 hash된 리플레시토큰을 null로 바꿔준다.
-    const isUser = this.users.find((user) => user.email === email);
+    const isUser = await this.usersRepository.findOne({ where: { email } });
     if (refreshToken === null) {
       isUser.hashedRefreshToken = null;
       return; //끝내기
@@ -175,15 +190,17 @@ export class AuthService {
 
   async logout(LogoutDto: logoutDto): Promise<userId> {
     try {
-      const { email, id, hashedRefreshToken } = this.users.find(
-        (user) => user.email === LogoutDto.email,
-      );
-      // console.log(id)
-      // refreshToken을 null로 만들어주기
-      this.hashedRefreshToken(email, null);
-      // 로그아웃 두번 해보면 hashedRefreshToken이 null로 바뀌어있음을 알 수 있다.
-      // console.log(hashedRefreshToken)
-      return { id };
+      const user = await this.usersRepository.findOne({
+        where: { email: LogoutDto.email },
+      });
+
+      if (user) {
+        // refreshToken을 null로 만들어주기
+        this.hashedRefreshToken(user.email, null);
+        // 로그아웃 두번 해보면 hashedRefreshToken이 null로 바뀌어있음을 알 수 있다.
+        // console.log(hashedRefreshToken)
+        return { id: user.id };
+      }
     } catch (error) {
       throw new HttpException(
         ERROR_MESSAGES.INTERNAL_SERVER_ERROR,
@@ -196,7 +213,9 @@ export class AuthService {
     ReissueRefreshToken: reissueRefreshToken,
   ): Promise<tokens> {
     const { userId, refreshToken } = ReissueRefreshToken;
-    const isUser = this.users.find((user) => user.id === userId);
+    const isUser = await this.usersRepository.findOne({
+      where: { id: userId },
+    });
     if (!isUser || !refreshToken) {
       throw new HttpException(
         ERROR_MESSAGES.REFRESHTOKEN_USER_NOT_EXIST,

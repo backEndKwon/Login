@@ -11,20 +11,27 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { typeORMConfig } from "./common/configs/typeorm.config"
+import { ProductsEntity } from './product/product.entity';
+import { ProductController } from './product/product.controller';
+import { ProductService } from './product/product.service';
+import { UsersEntity } from './auth/user.entity';
 @Module({
   imports: [  ConfigModule.forRoot({
     isGlobal: true,
+  
   }),
   TypeOrmModule.forRootAsync({
     imports: [ConfigModule], // ConfigModule을 import
     useFactory: (configService: ConfigService) =>
       typeORMConfig(configService), // ConfigService 주입하여 typeORMConfig 함수 호출
     inject: [ConfigService], // ConfigService 주입
-  }),AuthModule, ProductModule],
-  controllers: [AppController, AuthController],
+  }),AuthModule, ProductModule,
+  TypeOrmModule.forFeature([ProductsEntity,UsersEntity])],
+  controllers: [AppController, AuthController,ProductController],
   providers: [
     AppService,
     AuthService,
+    ProductService,
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
