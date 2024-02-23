@@ -35,6 +35,12 @@ export class AuthController {
     return this.authService.signUp(SignUpDto);
   }
 
+  //회원가입(user 대량 생산용 - 200만명)
+  @Get('dummyData')
+  createDummyUsers():Promise<string>{
+    return this.authService.createDummyUsers();
+  }
+
   //로그인
   //로그인시 해당 계정이 올바르다면 accessToken과 refreshToken발급
   @Post('login')

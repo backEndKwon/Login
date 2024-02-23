@@ -12,7 +12,7 @@ import {
   logoutDto,
   reissueRefreshToken,
 } from './dtos/user.dto';
-import { Users, userId } from './types/user.type';
+import { Users, userId, UUID } from './types/user.type';
 import * as argon from 'argon2';
 import { randomUUID } from 'crypto';
 import { jwtPayload, tokens } from './types/token.type';
@@ -23,6 +23,7 @@ import { ERROR_MESSAGES } from '../common/exceptions/errorMessage';
 import { Repository } from 'typeorm';
 import { UsersEntity } from '../common/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { v4 as uuidv4 } from 'uuid';
 
 const JWT_SECRET_KEY = '123QWE!@#';
 
@@ -39,6 +40,30 @@ export class AuthService {
   //모든계정 리스트
   async userList(): Promise<UsersEntity[]> {
     return this.usersRepository.find({});
+  }
+
+  /* 유저 더미데이터 생성 */
+  async createDummyUsers(): Promise<string> {
+    const totalUsers = 800000; // 총 생성할 유저 수
+
+    const updateProgressBar = (currentCount: number, total: number) => {
+      const progress = Math.floor((currentCount / total) * 100);
+      console.log(`진행 중... ${progress}%`);
+    };
+
+    let count = 1;
+    for (let i = 200000; i < 1000000; i++) {
+      const newUser = {
+        userId: uuidv4(),
+        email: `computer${i}@naver.com`,
+        password: `123!@#qweQWE`,
+      };
+      await this.usersRepository.save(newUser);
+      count++;
+      updateProgressBar(count, totalUsers);
+    }
+
+    return `더미 유저 데이터 ${count}명 생성 완료`;
   }
 
   async signUp(SignUpDto: signUpDto): Promise<userId> {

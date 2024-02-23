@@ -16,9 +16,9 @@ import { ProductsEntity } from 'src/common/entities/product.entity';
     /* 
   
   */
+    @PrimaryGeneratedColumn('uuid')
+    userId: string;
   
-    @PrimaryGeneratedColumn()
-    userId: UUID;
   
     @Column()
     email: string;

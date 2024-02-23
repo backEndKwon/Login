@@ -12,7 +12,7 @@ export type userInput = {
 export type UUID = `${string}-${string}-${string}-${string}-${string}`;
 
 export type userId = {
-  id: UUID;
+  id: string;
 };
 
 //users(임시 데이터베이스:배열)에 저장될 항목은
