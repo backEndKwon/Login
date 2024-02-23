@@ -1,5 +1,5 @@
 import { UUID } from 'src/auth/types/user.type';
-import { UsersEntity } from '../auth/user.entity';
+import { UsersEntity } from './user.entity';
 import {
   BaseEntity,
   Column,
@@ -38,7 +38,7 @@ export class ProductsEntity extends BaseEntity {
   @Column({nullable:false})
   prodQuantity: number;
   
-  @Column()
+  @Column({nullable:true, type: 'jsonb', array: true})
   reservationList: string[];
   
   @CreateDateColumn()

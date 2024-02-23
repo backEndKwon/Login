@@ -1,5 +1,5 @@
 import { UUID } from '../../auth/types/user.type';
-import { ProductsEntity } from './../product.entity';
+import { ProductsEntity } from '../../common/entities/product.entity';
 import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsBoolean, IsOptional, IsString } from 'class-validator';
 

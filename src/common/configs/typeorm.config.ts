@@ -1,6 +1,6 @@
 import { TypeOrmModuleOptions } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
-import { ProductsEntity } from "src/product/product.entity";
+// import { ProductsEntity } from "src/product/product.entity";
 
 export const typeORMConfig = (
   configService: ConfigService,

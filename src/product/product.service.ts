@@ -1,7 +1,7 @@
 import { userId } from './../auth/types/user.type';
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductsEntity } from './product.entity';
+import { ProductsEntity } from '../common/entities/product.entity';
 import { Repository } from 'typeorm';
 import { createProductDto } from './dtos/product.dto';
 

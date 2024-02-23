@@ -11,10 +11,10 @@ import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigService } from '@nestjs/config';
 import { typeORMConfig } from "./common/configs/typeorm.config"
-import { ProductsEntity } from './product/product.entity';
+import { ProductsEntity } from './common/entities/product.entity';
 import { ProductController } from './product/product.controller';
 import { ProductService } from './product/product.service';
-import { UsersEntity } from './auth/user.entity';
+import { UsersEntity } from './common/entities/user.entity';
 @Module({
   imports: [  ConfigModule.forRoot({
     isGlobal: true,

@@ -7,8 +7,8 @@ import {
     OneToMany,
     PrimaryGeneratedColumn,
   } from 'typeorm';
-import { UUID } from './types/user.type';
-import { ProductsEntity } from 'src/product/product.entity';
+import { UUID } from '../../auth/types/user.type';
+import { ProductsEntity } from 'src/common/entities/product.entity';
   // import { ApiProperty } from '@nestjs/swagger';
   
   @Entity('Users')
@@ -26,10 +26,10 @@ import { ProductsEntity } from 'src/product/product.entity';
     @Column()
     password: string;
   
-    @Column()
+    @Column({nullable:true, type: 'jsonb', array: true})
     createProd: string[];
   
-    @Column()
+    @Column({nullable:true, type: 'jsonb', array: true})
     reservationList: string[];
     
     @CreateDateColumn()

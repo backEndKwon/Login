@@ -1,7 +1,8 @@
+// import { UsersEntity } from '../auth/user.entity';
 import { Module } from '@nestjs/common';
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
-import { ProductsEntity } from './product.entity';
+import { ProductsEntity } from '../common/entities/product.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({

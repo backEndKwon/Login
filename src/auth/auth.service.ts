@@ -21,7 +21,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as validator from 'validator';
 import { ERROR_MESSAGES } from '../common/exceptions/errorMessage';
 import { Repository } from 'typeorm';
-import { UsersEntity } from './user.entity';
+import { UsersEntity } from '../common/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 
 const JWT_SECRET_KEY = '123QWE!@#';
