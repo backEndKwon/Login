@@ -38,8 +38,11 @@ export class AuthService {
   ) {}
 
   //모든계정 리스트
-  async userList(): Promise<UsersEntity[]> {
-    return this.usersRepository.find({});
+  // async userList(): Promise<UsersEntity[]> {
+  //   return this.usersRepository.find({});
+  // }
+  async userList(): Promise<string[]> {
+    return ["name1","name2","name3","name4","name5"];
   }
 
   /* 유저 더미데이터 생성 */

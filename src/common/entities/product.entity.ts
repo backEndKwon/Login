@@ -26,7 +26,7 @@ export class ProductsEntity extends BaseEntity {
   @PrimaryGeneratedColumn()
   itemId: number;
 
-  @Column('uuid')
+  @Column()
   userId: string;
 
   @Column({nullable:false})

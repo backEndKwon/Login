@@ -1,0 +1,14 @@
+config:
+  #타겟 url
+  target: http://localhost:3000
+  
+  phases:
+    - duration: 60 #측정시간
+      arrivalRate: 5 #매초 새로운 가상 유저를 만드는 수
+      name: warm up
+scenarios: 
+  - name: "sample"
+    flow: 
+      - get: 
+          url: "/auth/home" #EndPoint
+
